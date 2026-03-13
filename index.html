@@ -154,6 +154,7 @@ tbody tr:hover { background: var(--blue-light); }
 tbody td { padding: 7px 13px; text-align: center; color: #2d2c29; }
 tbody td:first-child { text-align: left; font-family: var(--sans); font-size: 13px; }
 .best { font-weight: 700; color: var(--blue); }
+.second { text-decoration: underline; text-underline-offset: 3px; }
 .noir-row { background: #f0f4ff; }
 .noir-row td:first-child { color: var(--blue); font-weight: 600; }
 .grp td { font-size: 11px; font-style: italic; color: var(--muted); padding-top: 13px; font-family: var(--sans); font-weight: 400; }
@@ -381,24 +382,39 @@ footer a:hover { color: #fff; }
           </tr>
         </thead>
         <tbody>
+          <!-- Shenzhen: Binary Segmentation
+               Res 10%: DSC: NOIR 0.93=best, FNO 0.92=2nd | IoU: NOIR 0.88=best, FNO 0.86=2nd
+               Res 25%: DSC: NOIR/FNO 0.94=best, ViT 0.93=2nd | IoU: NOIR/FNO 0.88=best, ViT 0.87=2nd
+               Res 100%: DSC: U-Net/AttU-Net 0.95=best, ViT/NOIR 0.94=2nd | IoU: U-Net/AttU-Net 0.91=best, ViT/FNO/NOIR 0.88–0.90=2nd (ViT 0.90) -->
           <tr class="grp"><td colspan="7">Shenzhen — Binary Segmentation</td></tr>
-          <tr><td>U-Net</td><td>0.75</td><td>0.62</td><td>0.92</td><td>0.87</td><td class="best">0.95</td><td class="best">0.91</td></tr>
-          <tr><td>ViT</td><td>0.91</td><td>0.84</td><td>0.93</td><td>0.87</td><td>0.94</td><td>0.90</td></tr>
+          <tr><td>U-Net</td><td>0.75</td><td>0.62</td><td><span class="second">0.92</span></td><td><span class="second">0.87</span></td><td class="best">0.95</td><td class="best">0.91</td></tr>
+          <tr><td>ViT</td><td><span class="second">0.91</span></td><td><span class="second">0.84</span></td><td><span class="second">0.93</span></td><td><span class="second">0.87</span></td><td><span class="second">0.94</span></td><td><span class="second">0.90</span></td></tr>
           <tr><td>AttU-Net</td><td>0.01</td><td>0.01</td><td>0.74</td><td>0.64</td><td class="best">0.95</td><td class="best">0.91</td></tr>
-          <tr><td>FNO</td><td>0.92</td><td>0.86</td><td class="best">0.94</td><td class="best">0.88</td><td>0.94</td><td>0.89</td></tr>
-          <tr class="noir-row"><td>NOIR (Ours)</td><td class="best">0.93</td><td class="best">0.88</td><td class="best">0.94</td><td class="best">0.88</td><td>0.94</td><td>0.88</td></tr>
+          <tr><td>FNO</td><td><span class="second">0.92</span></td><td><span class="second">0.86</span></td><td class="best">0.94</td><td class="best">0.88</td><td><span class="second">0.94</span></td><td>0.89</td></tr>
+          <tr class="noir-row"><td>NOIR (Ours)</td><td class="best">0.93</td><td class="best">0.88</td><td class="best">0.94</td><td class="best">0.88</td><td><span class="second">0.94</span></td><td>0.88</td></tr>
+          <!-- OASIS-4: Multi-label Brain MRI
+               Res 10%: DSC: NOIR 0.85=best, ViT/FNO 0.65–0.66=2nd (ViT 0.66) | IoU: NOIR 0.79=best, ViT/FNO 0.51=2nd (tie)
+               Res 25%: DSC: ViT 0.85=best, FNO 0.84=2nd | IoU: ViT 0.74=best, FNO 0.74=best; NOIR 0.79=best (NOIR wins at 0.85 DSC / 0.79 IoU)
+                 Actually NOIR 0.85 DSC = tied best with ViT; IoU NOIR 0.79 > ViT 0.74 so NOIR best IoU
+               Res 100%: DSC: U-Net/AttU-Net 0.95=best, FNO 0.91=2nd | IoU: U-Net/AttU-Net 0.90=best, FNO/ViT 0.83=2nd -->
           <tr class="grp"><td colspan="7">OASIS-4 — Multi-label Brain MRI</td></tr>
           <tr><td>U-Net</td><td>0.40</td><td>0.29</td><td>0.79</td><td>0.66</td><td class="best">0.95</td><td class="best">0.90</td></tr>
-          <tr><td>ViT</td><td>0.66</td><td>0.51</td><td class="best">0.85</td><td>0.74</td><td>0.90</td><td>0.83</td></tr>
+          <tr><td>ViT</td><td><span class="second">0.66</span></td><td><span class="second">0.51</span></td><td class="best">0.85</td><td><span class="second">0.74</span></td><td>0.90</td><td><span class="second">0.83</span></td></tr>
           <tr><td>AttU-Net</td><td>0.40</td><td>0.29</td><td>0.76</td><td>0.64</td><td class="best">0.95</td><td class="best">0.90</td></tr>
-          <tr><td>FNO</td><td>0.65</td><td>0.51</td><td>0.84</td><td>0.74</td><td>0.91</td><td>0.83</td></tr>
+          <tr><td>FNO</td><td><span class="second">0.65</span></td><td><span class="second">0.51</span></td><td><span class="second">0.84</span></td><td><span class="second">0.74</span></td><td><span class="second">0.91</span></td><td><span class="second">0.83</span></td></tr>
           <tr class="noir-row"><td>NOIR (Ours)</td><td class="best">0.85</td><td class="best">0.79</td><td class="best">0.85</td><td class="best">0.79</td><td>0.85</td><td>0.79</td></tr>
+          <!-- SkullBreak: 3D Shape Completion
+               Res 10%: DSC: 3D ViT/NOIR 0.86=best | IoU: 3D ViT 0.76=best, NOIR 0.73=2nd
+               Res 25%: DSC: 3D ViT 0.91=best, 3D AttU-Net 0.84=2nd? No FNO 0.87, 3D AttU-Net 0.84, NOIR 0.86; order: ViT 0.91 > NOIR 0.86 > FNO 0.87 — wait: ViT 0.91 > FNO 0.87 > NOIR 0.86 > AttU-Net 0.84 > U-Net 0.90? U-Net 0.90 is 2nd
+                 Res 25% DSC ranking: ViT 0.91 > U-Net 0.90 > NOIR 0.86... wait U-Net=0.90, so 2nd best DSC is U-Net 0.90
+               Res 25% IoU: ViT 0.84=best, FNO 0.78=2nd (U-Net 0.83 is 2nd actually: U-Net 0.83 > FNO 0.78 > NOIR 0.75)
+               Res 100%: DSC: U-Net/AttU-Net 0.96=best, ViT/FNO 0.90–0.91=2nd (ViT 0.91) | IoU: U-Net/AttU-Net 0.93=best, ViT 0.84=2nd -->
           <tr class="grp"><td colspan="7">SkullBreak — 3D Shape Completion</td></tr>
-          <tr><td>3D U-Net</td><td>0.71</td><td>0.56</td><td>0.90</td><td>0.83</td><td class="best">0.96</td><td class="best">0.93</td></tr>
-          <tr><td>3D ViT</td><td class="best">0.86</td><td class="best">0.76</td><td class="best">0.91</td><td class="best">0.84</td><td>0.91</td><td>0.84</td></tr>
+          <tr><td>3D U-Net</td><td>0.71</td><td>0.56</td><td><span class="second">0.90</span></td><td><span class="second">0.83</span></td><td class="best">0.96</td><td class="best">0.93</td></tr>
+          <tr><td>3D ViT</td><td class="best">0.86</td><td class="best">0.76</td><td class="best">0.91</td><td class="best">0.84</td><td><span class="second">0.91</span></td><td><span class="second">0.84</span></td></tr>
           <tr><td>3D AttU-Net</td><td>0.52</td><td>0.35</td><td>0.84</td><td>0.73</td><td class="best">0.96</td><td class="best">0.93</td></tr>
-          <tr><td>FNO</td><td>0.74</td><td>0.59</td><td>0.87</td><td>0.78</td><td>0.90</td><td>0.82</td></tr>
-          <tr class="noir-row"><td>NOIR (Ours)</td><td class="best">0.86</td><td>0.73</td><td>0.86</td><td>0.75</td><td>0.87</td><td>0.75</td></tr>
+          <tr><td>FNO</td><td>0.74</td><td>0.59</td><td>0.87</td><td>0.78</td><td><span class="second">0.90</span></td><td>0.82</td></tr>
+          <tr class="noir-row"><td>NOIR (Ours)</td><td class="best">0.86</td><td><span class="second">0.73</span></td><td>0.86</td><td>0.75</td><td>0.87</td><td>0.75</td></tr>
         </tbody>
       </table>
     </div>
@@ -427,19 +443,27 @@ footer a:hover { color: #fff; }
           </tr>
         </thead>
         <tbody>
+          <!-- Ultrasound Synthesis
+               Res 25% PSNR: NOIR 30.94=best, ViT 28.22=2nd | SSIM: AttU-Net 0.87=best, NOIR 0.86=2nd
+               Res 50% PSNR: NOIR 30.94=best, AttU-Net 28.29=2nd | SSIM: AttU-Net 0.89=best, ViT 0.79=2nd
+               Res 100% PSNR: NOIR 31.83=best, AttU-Net 28.55=2nd | SSIM: AttU-Net 0.90=best, NOIR 0.87=2nd -->
           <tr class="grp"><td colspan="7">Ultrasound Synthesis</td></tr>
           <tr><td>U-Net</td><td>17.51</td><td>0.84</td><td>17.45</td><td>0.84</td><td>17.54</td><td>0.89</td></tr>
-          <tr><td>ViT</td><td>28.22</td><td>0.78</td><td>28.31</td><td>0.79</td><td>28.36</td><td>0.79</td></tr>
+          <tr><td>ViT</td><td><span class="second">28.22</span></td><td>0.78</td><td><span class="second">28.31</span></td><td><span class="second">0.79</span></td><td><span class="second">28.36</span></td><td>0.79</td></tr>
           <tr><td>AttU-Net</td><td>27.76</td><td class="best">0.87</td><td>28.29</td><td class="best">0.89</td><td>28.55</td><td class="best">0.90</td></tr>
           <tr><td>FNO</td><td>27.37</td><td>0.73</td><td>27.94</td><td>0.75</td><td>28.15</td><td>0.76</td></tr>
           <tr><td>DDPM</td><td>26.35</td><td>0.65</td><td>26.51</td><td>0.65</td><td>26.91</td><td>0.64</td></tr>
-          <tr class="noir-row"><td>NOIR (Ours)</td><td class="best">30.94</td><td>0.86</td><td class="best">30.94</td><td>0.86</td><td class="best">31.83</td><td>0.87</td></tr>
+          <tr class="noir-row"><td>NOIR (Ours)</td><td class="best">30.94</td><td><span class="second">0.86</span></td><td class="best">30.94</td><td>0.86</td><td class="best">31.83</td><td><span class="second">0.87</span></td></tr>
+          <!-- fastMRI PD→T2
+               Res 25% PSNR: NOIR 22.87=best, DDPM 22.66=2nd | SSIM: DDPM 0.69=best, ViT 0.62=2nd
+               Res 50% PSNR: DDPM 25.59=best, U-Net 23.49=2nd | SSIM: DDPM 0.76=best, AttU-Net 0.67=2nd
+               Res 100% PSNR: DDPM 25.45=best, U-Net 24.55=2nd | SSIM: DDPM 0.74=best, U-Net/AttU-Net 0.72=2nd -->
           <tr class="grp"><td colspan="7">fastMRI — MRI PD → T2</td></tr>
-          <tr><td>U-Net</td><td>21.68</td><td>0.60</td><td>23.49</td><td>0.68</td><td>24.55</td><td>0.72</td></tr>
-          <tr><td>ViT</td><td>22.34</td><td>0.62</td><td>22.54</td><td>0.63</td><td>22.61</td><td>0.63</td></tr>
-          <tr><td>AttU-Net</td><td>21.75</td><td>0.60</td><td>23.26</td><td>0.67</td><td>24.46</td><td>0.72</td></tr>
+          <tr><td>U-Net</td><td>21.68</td><td>0.60</td><td><span class="second">23.49</span></td><td>0.68</td><td><span class="second">24.55</span></td><td><span class="second">0.72</span></td></tr>
+          <tr><td>ViT</td><td>22.34</td><td><span class="second">0.62</span></td><td>22.54</td><td>0.63</td><td>22.61</td><td>0.63</td></tr>
+          <tr><td>AttU-Net</td><td>21.75</td><td>0.60</td><td>23.26</td><td><span class="second">0.67</span></td><td>24.46</td><td><span class="second">0.72</span></td></tr>
           <tr><td>FNO</td><td>22.61</td><td>0.58</td><td>22.74</td><td>0.60</td><td>22.82</td><td>0.60</td></tr>
-          <tr><td>DDPM</td><td>22.66</td><td class="best">0.69</td><td class="best">25.59</td><td class="best">0.76</td><td class="best">25.45</td><td class="best">0.74</td></tr>
+          <tr><td>DDPM</td><td><span class="second">22.66</span></td><td class="best">0.69</td><td class="best">25.59</td><td class="best">0.76</td><td class="best">25.45</td><td class="best">0.74</td></tr>
           <tr class="noir-row"><td>NOIR (Ours)</td><td class="best">22.87</td><td>0.61</td><td>22.87</td><td>0.61</td><td>22.87</td><td>0.61</td></tr>
         </tbody>
       </table>
@@ -469,37 +493,6 @@ footer a:hover { color: #fff; }
     <p>
       In NOIR, $T_\Psi^\dagger$ is the INR inner-loop optimization (discrete signal $\to$ $z_\text{in}$) and $T_\Phi$ is the output INR evaluated at arbitrary resolution. Because $\mathcal{T}^d$ operates solely on $z_\text{in}$, it is decoupled from the input grid.
     </p>
-<!-- 
-    <div class="reno-pipeline">
-      <div class="reno-step">
-        <div class="step-box">$f^d$ at res $r$</div>
-        <div class="step-label">discrete input</div>
-      </div>
-      <div class="reno-arrow">→</div>
-      <div class="reno-step">
-        <div class="step-box">$T_\Psi^\dagger$</div>
-        <div class="step-label">INR inner-loop<br>→ $z_\text{in} \in \mathbb{R}^{p_\text{in}}$</div>
-      </div>
-      <div class="reno-arrow">→</div>
-      <div class="reno-step">
-        <div class="step-box hl">$\mathcal{T}^d$</div>
-        <div class="step-label">Neural Operator<br>$z_\text{in} \mapsto \hat{z}_\text{out}$</div>
-      </div>
-      <div class="reno-arrow">→</div>
-      <div class="reno-step">
-        <div class="step-box">$T_\Phi$</div>
-        <div class="step-label">output INR eval<br>at any res $r'$</div>
-      </div>
-      <div class="reno-arrow">→</div>
-      <div class="reno-step">
-        <div class="step-box">$g$ at res $r'$</div>
-        <div class="step-label">continuous output</div>
-      </div>
-    </div> -->
-
-    <!-- <p>
-      Because $\mathcal{T}^d$ acts only on $z_\text{in}$ — which is optimized to represent the <em>continuous</em> function underlying $f^d$ — the predicted $\hat{z}_\text{out}$ is independent of the resolution $r$ at which $f^d$ was observed. This is the mechanism that makes NOIR a $\varepsilon$-ReNO: the aliasing error is driven to zero by design.
-    </p> -->
 
     <h3>Empirical validation</h3>
     <p>
@@ -545,41 +538,6 @@ footer a:hover { color: #fff; }
 
   </section>
 
-  <!-- ═══════ ABLATION ═══════ -->
-  <section class="fade">
-    <div class="sec-label">Ablation</div>
-    <h2>Operator Architecture</h2>
-
-    <p>
-      In low-dimensional latent spaces ($p = 64$), even linear regression achieves competitive results. In higher dimensions ($p = 2048$), an MLP provides a clear advantage — the difficulty scales with latent dimensionality, not the task.
-    </p>
-
-    <div class="tbl-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th style="text-align:left">Dataset (dim)</th>
-            <th style="text-align:left">Operator $\mathcal{T}$</th>
-            <th>DSC ↑</th>
-            <th>IoU ↑</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="grp"><td colspan="4">Shenzhen — $p = 64$</td></tr>
-          <tr><td>Shenzhen</td><td>Linear Regression</td><td>0.93</td><td>0.87</td></tr>
-          <tr><td>Shenzhen</td><td>SVR</td><td class="best">0.94</td><td class="best">0.88</td></tr>
-          <tr><td>Shenzhen</td><td>Random Forest</td><td>0.93</td><td>0.86</td></tr>
-          <tr class="noir-row"><td>Shenzhen</td><td>MLP (Ours)</td><td class="best">0.94</td><td class="best">0.88</td></tr>
-          <tr class="grp"><td colspan="4">OASIS-4 — $p = 2048$</td></tr>
-          <tr><td>OASIS-4</td><td>Linear Regression</td><td>0.80</td><td>0.68</td></tr>
-          <tr><td>OASIS-4</td><td>SVR</td><td>0.79</td><td>0.66</td></tr>
-          <tr><td>OASIS-4</td><td>Random Forest</td><td>0.80</td><td>0.68</td></tr>
-          <tr class="noir-row"><td>OASIS-4</td><td>MLP (Ours)</td><td class="best">0.85</td><td class="best">0.79</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
   <!-- ═══════ INR RECONSTRUCTIONS ═══════ -->
   <section class="fade">
     <div class="sec-label">Supplementary — INR Reconstruction Quality</div>
@@ -607,27 +565,6 @@ footer a:hover { color: #fff; }
       <div class="fig-cap"><strong>Ultrasound.</strong> Output INR reconstructions from latent codes. PSNR: 33.48, SSIM: 0.70.</div>
     </div>
   </section>
-
-  <!-- ═══════ DISCUSSION ═══════ -->
-  <!-- <section class="fade">
-    <div class="sec-label">Discussion</div>
-    <h2>Limitations &amp; Future Work</h2>
-
-    <div class="limits">
-      <div class="limit">
-        <div class="limit-dot"></div>
-        <p><strong>Latent dimensionality trade-off.</strong> Larger latent codes improve fidelity but make the NO harder to train. Co-design of both components is essential.</p>
-      </div>
-      <div class="limit">
-        <div class="limit-dot"></div>
-        <p><strong>Supervised only.</strong> NOIR requires paired data. Unsupervised tasks such as deformable image registration are not yet supported.</p>
-      </div>
-      <div class="limit">
-        <div class="limit-dot"></div>
-        <p><strong>Inference time.</strong> The inner optimization loop adds ~0.2–1.6 s per sample vs. ~3–5 ms for feed-forward baselines.</p>
-      </div>
-    </div>
-  </section> -->
 
   <!-- ═══════ BIBTEX ═══════ -->
   <section class="fade">
