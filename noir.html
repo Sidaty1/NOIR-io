@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOIR: Neural Operator Mapping for Implicit Representations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']], tags: 'none' },
+  options: { skipHtmlTags: ['script','noscript','style','textarea'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+:root {
+  --ink: #111110;
+  --bg: #f7f5f0;
+  --card: #ffffff;
+  --blue: #1d4ed8;
+  --blue-light: #eff4ff;
+  --red: #be3a1c;
+  --muted: #6b6a65;
+  --border: #e2e0d8;
+  --mono: 'IBM Plex Mono', monospace;
+  --serif: 'DM Serif Display', Georgia, serif;
+  --sans: 'DM Sans', system-ui, sans-serif;
+}
+
+body { font-family: var(--sans); background: var(--bg); color: var(--ink); line-height: 1.7; }
+
+/* ── HERO ── */
+.hero {
+  background: var(--ink);
+  color: #fff;
+  padding: 80px 24px 64px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ghost NOIR watermark */
+.hero::after {
+  content: 'NOIR';
+  position: absolute;
+  right: -24px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--serif);
+  font-size: clamp(120px, 22vw, 300px);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  color: rgba(255,255,255,0.04);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.hero-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+h1 {
+  font-family: var(--serif);
+  font-size: clamp(30px, 5.5vw, 54px);
+  line-height: 1.1;
+  letter-spacing: -.01em;
+  font-weight: 400;
+  margin-bottom: 28px;
+  color: #fff;
+}
+h1 em { color: rgba(255,255,255,.45); font-style: italic; }
+
+.authors { font-size: 15px; color: rgba(255,255,255,.7); line-height: 2; margin-bottom: 6px; }
+.authors a { color: #fff; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,.2); transition: border-color .15s; }
+.authors a:hover { border-color: rgba(255,255,255,.7); }
+sup { font-size: 10px; }
+
+.affil { font-size: 13px; color: rgba(255,255,255,.35); font-style: italic; }
+
+.links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+
+.btn {
+  font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+  text-decoration: none; padding: 9px 18px; display: inline-flex; align-items: center;
+  gap: 7px; transition: .15s; border-radius: 2px;
+}
+.btn-white { background: #fff; color: var(--ink); }
+.btn-white:hover { background: #e4e2dc; }
+.btn-dim { background: transparent; color: rgba(255,255,255,.25); border: 1px solid rgba(255,255,255,.1); cursor: default; pointer-events: none; }
+
+/* ── LAYOUT ── */
+main { max-width: 800px; margin: 0 auto; padding: 0 24px 80px; }
+section { margin-top: 60px; }
+
+.sec-label {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--muted); display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+}
+.sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+h2 {
+  font-family: var(--serif); font-size: clamp(20px, 3vw, 30px);
+  font-weight: 400; letter-spacing: -.01em; margin-bottom: 14px; line-height: 1.2;
+}
+h3 { font-size: 14px; font-weight: 600; margin: 24px 0 6px; color: var(--ink); }
+p { font-size: 15px; line-height: 1.78; color: #2d2c29; margin-bottom: 10px; }
+
+/* ── FIGURES ── */
+.fig { margin: 24px 0; background: var(--card); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+.fig img { width: 100%; height: auto; display: block; }
+.fig-cap { padding: 11px 16px; font-size: 13px; color: var(--muted); line-height: 1.5; border-top: 1px solid var(--border); }
+.fig-cap strong { color: var(--ink); font-weight: 600; }
+
+.fig-sm { margin: 24px auto; max-width: 520px; background: var(--card); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+.fig-sm img { width: 100%; height: auto; display: block; }
+.fig-sm .fig-cap { padding: 11px 16px; font-size: 13px; color: var(--muted); line-height: 1.5; border-top: 1px solid var(--border); }
+.fig-sm .fig-cap strong { color: var(--ink); font-weight: 600; }
+
+.fig-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 24px 0; }
+@media (max-width: 560px) { .fig-row { grid-template-columns: 1fr; } }
+.fig-row .fig { margin: 0; }
+
+/* ── ABSTRACT ── */
+.abstract { border-left: 3px solid var(--ink); padding: 20px 26px; background: var(--card); border-radius: 0 4px 4px 0; }
+.abstract p { font-size: 15px; line-height: 1.82; margin: 0; }
+
+/* ── KEYWORDS ── */
+.keywords { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 16px; }
+.kw { font-family: var(--mono); font-size: 11px; padding: 4px 11px; background: var(--ink); color: #fff; border-radius: 2px; }
+
+/* ── CONTRIBUTIONS ── */
+.contrib-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.contrib { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); padding: 12px 16px; border-radius: 4px; }
+.contrib-n { font-family: var(--mono); font-size: 10px; color: var(--muted); flex-shrink: 0; padding-top: 2px; }
+.contrib p { font-size: 14px; margin: 0; line-height: 1.6; }
+
+/* ── TABLES ── */
+.tbl-wrap { overflow-x: auto; margin: 18px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; font-family: var(--mono); }
+thead tr { background: var(--ink); color: #fff; }
+thead th { padding: 9px 13px; text-align: center; font-size: 10px; letter-spacing: .05em; white-space: nowrap; font-weight: 500; }
+thead th:first-child { text-align: left; }
+tbody tr { border-bottom: 1px solid var(--border); }
+tbody tr:hover { background: var(--blue-light); }
+tbody td { padding: 7px 13px; text-align: center; color: #2d2c29; }
+tbody td:first-child { text-align: left; font-family: var(--sans); font-size: 13px; }
+.best { font-weight: 700; color: var(--blue); }
+.noir-row { background: #f0f4ff; }
+.noir-row td:first-child { color: var(--blue); font-weight: 600; }
+.grp td { font-size: 11px; font-style: italic; color: var(--muted); padding-top: 13px; font-family: var(--sans); font-weight: 400; }
+
+/* ── STAT CARDS ── */
+.stat-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 18px 0; }
+@media (max-width: 520px) { .stat-cards { grid-template-columns: 1fr; } }
+.stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 14px 16px; }
+.stat-val { font-family: var(--mono); font-size: 13px; color: var(--blue); margin-bottom: 4px; }
+.stat-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+/* ── MATH DISPLAY BLOCKS ── */
+.math-block {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--blue);
+  border-radius: 0 4px 4px 0;
+  padding: 18px 24px;
+  margin: 18px 0;
+  overflow-x: auto;
+}
+.math-block .label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 10px;
+}
+.math-block .mjx-container, .math-block .MathJax { font-size: 1.05em !important; }
+
+.def-grid {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 6px 20px;
+  margin: 14px 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: #2d2c29;
+}
+.def-grid dt { font-family: var(--mono); font-size: 13px; color: var(--blue); padding-top: 1px; white-space: nowrap; }
+.def-grid dd { margin: 0; }
+
+.reno-pipeline {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 20px 0;
+  overflow-x: auto;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 18px 20px;
+}
+.reno-step {
+  flex: 1;
+  min-width: 90px;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #2d2c29;
+}
+.reno-step .step-box {
+  display: inline-block;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink);
+  margin-bottom: 6px;
+  white-space: nowrap;
+}
+.reno-step .step-box.hl { background: var(--blue); color: #fff; border-color: var(--blue); }
+.reno-step .step-label { font-size: 12px; color: var(--muted); }
+.reno-arrow {
+  flex-shrink: 0;
+  padding: 0 8px;
+  font-size: 18px;
+  color: var(--border);
+  line-height: 1;
+  margin-bottom: 22px;
+}
+
+/* ── LIMITATIONS ── */
+.limits { display: flex; flex-direction: column; gap: 12px; margin-top: 6px; }
+.limit { display: flex; gap: 12px; align-items: flex-start; }
+.limit-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--red); margin-top: 9px; flex-shrink: 0; }
+.limit p { font-size: 14px; margin: 0; line-height: 1.7; }
+
+/* ── BIBTEX ── */
+.bib { background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 20px 22px; position: relative; }
+.bib pre { font-family: var(--mono); font-size: 12px; line-height: 1.75; white-space: pre-wrap; word-break: break-all; color: #2d2c29; }
+.copy-btn {
+  position: absolute; top: 16px; right: 16px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: .06em;
+  padding: 4px 10px; background: var(--border); border: none;
+  border-radius: 2px; cursor: pointer; color: var(--muted); transition: .15s;
+}
+.copy-btn:hover { background: var(--ink); color: #fff; }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--ink); color: rgba(255,255,255,.35);
+  text-align: center; padding: 26px 24px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: .05em;
+}
+footer a { color: rgba(255,255,255,.55); text-decoration: none; }
+footer a:hover { color: #fff; }
+
+/* ── FADE IN ── */
+@media (prefers-reduced-motion: no-preference) {
+  .fade { opacity: 0; transform: translateY(12px); transition: opacity .4s ease, transform .4s ease; }
+  .fade.on { opacity: 1; transform: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
+<div class="hero">
+  <div class="hero-inner">
+    <h1>NOIR:<br><em>Neural Operator Mapping<br>for Implicit Representations</em></h1>
+    <div class="authors">
+      <a href="#">Sidaty El Hadramy</a><sup>1</sup> &nbsp;·&nbsp;
+      <a href="#">Nazim Haouchine</a><sup>2</sup> &nbsp;·&nbsp;
+      <a href="#">Michael Wehrli</a><sup>1</sup> &nbsp;·&nbsp;
+      <a href="#">Philippe C. Cattin</a><sup>1</sup>
+    </div>
+    <div class="affil">
+      <sup>1</sup> Department of Biomedical Engineering, University of Basel. &emsp;
+      <sup>2</sup> Harvard Medical School, Brigham and Women's Hospital.
+    </div>
+    <div class="links">
+      <a class="btn btn-white" href="https://github.com/Sidaty1/NOIR" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+        Code
+      </a>
+      <a class="btn btn-dim">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        arXiv (coming soon)
+      </a>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- ═══════ ABSTRACT ═══════ -->
+  <section class="fade">
+    <div class="sec-label">Abstract</div>
+
+    <div class="fig">
+      <img src="figures/noir_teaser.png" alt="NOIR downstream tasks overview">
+      <div class="fig-cap">
+        <strong>Downstream tasks solved by NOIR.</strong> Segmentation, shape completion, synthesis, and image-to-image translation in 2D and 3D, with inherent robustness to resolution changes.
+      </div>
+    </div>
+
+    <div class="abstract">
+      <p>
+        NOIR reframes core medical imaging tasks as operator learning between continuous function spaces, challenging the paradigm of discrete grid-based deep learning. Instead of operating on fixed pixel or voxel grids, NOIR embeds medical signals into shared Implicit Neural Representations (INRs) and learns a Neural Operator (NO) that maps between their latent modulations, enabling resolution-independent function-to-function transformations. We evaluate NOIR on segmentation, shape completion, image-to-image translation, and image synthesis across several public datasets (Shenzhen, OASIS-4, SkullBreak, fastMRI) and an in-house clinical dataset, in both 2D and 3D.
+      </p>
+    </div>
+
+    <div class="keywords">
+      <span class="kw">Neural Fields</span>
+      <span class="kw">Neural Operators</span>
+      <span class="kw">Medical Imaging</span>
+      <span class="kw">Resolution Invariance</span>
+    </div>
+  </section>
+
+  <!-- ═══════ METHOD ═══════ -->
+  <section class="fade">
+    <div class="sec-label">Method</div>
+    <h2>Neural Operator Mapping for Implicit Representations</h2>
+
+    <p>
+      NOIR formulates each downstream task as an operator learning problem between continuous function spaces. Both input and output signals are embedded into shared INRs via meta-learning, producing compact latent codes. A Neural Operator then maps between these codes, decoupling the prediction from the input discretization.
+    </p>
+
+    <div class="fig-sm">
+      <img src="figures/NOIR_overview.png" alt="NOIR architecture diagram">
+      <div class="fig-cap">
+        <strong>Architecture of NOIR.</strong> Discrete signals are embedded via INRs with shared parameters $\theta$ and signal-specific latents. A Neural Operator maps $z_\text{in} \to z_\text{out}$, enabling resolution-independent function-to-function mapping.
+      </div>
+    </div>
+
+    <div class="contrib-list">
+      <div class="contrib"><span class="contrib-n">01</span><p>Challenges grid-based deep learning by questioning the fundamental choice of image representation.</p></div>
+      <div class="contrib"><span class="contrib-n">02</span><p>Formulates downstream tasks as Neural Operator learning between INR latent spaces.</p></div>
+      <div class="contrib"><span class="contrib-n">03</span><p>Applies to segmentation, shape completion, synthesis, and translation in 2D and 3D.</p></div>
+      <div class="contrib"><span class="contrib-n">04</span><p>Empirically validates the $\varepsilon$-ReNO property: consistent predictions across various input discretizations.</p></div>
+    </div>
+  </section>
+
+  <!-- ═══════ RESULTS ═══════ -->
+  <section class="fade">
+    <div class="sec-label">Results</div>
+    <h2>Segmentation &amp; Shape Completion</h2>
+
+    <p>Evaluated at 10%, 25%, and 100% of native resolution against U-Net, ViT, AttU-Net, and FNO. Grid-based methods degrade sharply at low resolution; NOIR maintains stable performance across all discretizations.</p>
+
+    <div class="fig">
+      <img src="figures/figure1.png" alt="Qualitative segmentation and shape completion results">
+      <div class="fig-cap">
+        <strong>Qualitative results.</strong> Rows: Shenzhen binary segmentation, OASIS-4 multi-label brain MRI, SkullBreak 3D shape completion. Columns: input, ground truth, NOIR, and baselines.
+      </div>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="text-align:left">Method</th>
+            <th colspan="2">Res 10%</th>
+            <th colspan="2">Res 25%</th>
+            <th colspan="2">Res 100%</th>
+          </tr>
+          <tr style="background:#1c1c1a">
+            <th style="text-align:left;color:rgba(255,255,255,.3);font-size:9px"></th>
+            <th>DSC</th><th>IoU</th><th>DSC</th><th>IoU</th><th>DSC</th><th>IoU</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="grp"><td colspan="7">Shenzhen — Binary Segmentation</td></tr>
+          <tr><td>U-Net</td><td>0.75</td><td>0.62</td><td>0.92</td><td>0.87</td><td class="best">0.95</td><td class="best">0.91</td></tr>
+          <tr><td>ViT</td><td>0.91</td><td>0.84</td><td>0.93</td><td>0.87</td><td>0.94</td><td>0.90</td></tr>
+          <tr><td>AttU-Net</td><td>0.01</td><td>0.01</td><td>0.74</td><td>0.64</td><td class="best">0.95</td><td class="best">0.91</td></tr>
+          <tr><td>FNO</td><td>0.92</td><td>0.86</td><td class="best">0.94</td><td class="best">0.88</td><td>0.94</td><td>0.89</td></tr>
+          <tr class="noir-row"><td>NOIR (Ours)</td><td class="best">0.93</td><td class="best">0.88</td><td class="best">0.94</td><td class="best">0.88</td><td>0.94</td><td>0.88</td></tr>
+          <tr class="grp"><td colspan="7">OASIS-4 — Multi-label Brain MRI</td></tr>
+          <tr><td>U-Net</td><td>0.40</td><td>0.29</td><td>0.79</td><td>0.66</td><td class="best">0.95</td><td class="best">0.90</td></tr>
+          <tr><td>ViT</td><td>0.66</td><td>0.51</td><td class="best">0.85</td><td>0.74</td><td>0.90</td><td>0.83</td></tr>
+          <tr><td>AttU-Net</td><td>0.40</td><td>0.29</td><td>0.76</td><td>0.64</td><td class="best">0.95</td><td class="best">0.90</td></tr>
+          <tr><td>FNO</td><td>0.65</td><td>0.51</td><td>0.84</td><td>0.74</td><td>0.91</td><td>0.83</td></tr>
+          <tr class="noir-row"><td>NOIR (Ours)</td><td class="best">0.85</td><td class="best">0.79</td><td class="best">0.85</td><td class="best">0.79</td><td>0.85</td><td>0.79</td></tr>
+          <tr class="grp"><td colspan="7">SkullBreak — 3D Shape Completion</td></tr>
+          <tr><td>3D U-Net</td><td>0.71</td><td>0.56</td><td>0.90</td><td>0.83</td><td class="best">0.96</td><td class="best">0.93</td></tr>
+          <tr><td>3D ViT</td><td class="best">0.86</td><td class="best">0.76</td><td class="best">0.91</td><td class="best">0.84</td><td>0.91</td><td>0.84</td></tr>
+          <tr><td>3D AttU-Net</td><td>0.52</td><td>0.35</td><td>0.84</td><td>0.73</td><td class="best">0.96</td><td class="best">0.93</td></tr>
+          <tr><td>FNO</td><td>0.74</td><td>0.59</td><td>0.87</td><td>0.78</td><td>0.90</td><td>0.82</td></tr>
+          <tr class="noir-row"><td>NOIR (Ours)</td><td class="best">0.86</td><td>0.73</td><td>0.86</td><td>0.75</td><td>0.87</td><td>0.75</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 style="margin-top:44px">Image Synthesis &amp; Translation</h2>
+
+    <div class="fig">
+      <img src="figures/figure2.png" alt="Qualitative synthesis and translation results">
+      <div class="fig-cap">
+        <strong>Qualitative results.</strong> Top: ultrasound synthesis from label maps. Bottom: MRI PD → T2 translation (fastMRI).
+      </div>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="text-align:left">Method</th>
+            <th colspan="2">Res 25%</th>
+            <th colspan="2">Res 50%</th>
+            <th colspan="2">Res 100%</th>
+          </tr>
+          <tr style="background:#1c1c1a">
+            <th style="text-align:left;color:rgba(255,255,255,.3);font-size:9px"></th>
+            <th>PSNR</th><th>SSIM</th><th>PSNR</th><th>SSIM</th><th>PSNR</th><th>SSIM</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="grp"><td colspan="7">Ultrasound Synthesis</td></tr>
+          <tr><td>U-Net</td><td>17.51</td><td>0.84</td><td>17.45</td><td>0.84</td><td>17.54</td><td>0.89</td></tr>
+          <tr><td>ViT</td><td>28.22</td><td>0.78</td><td>28.31</td><td>0.79</td><td>28.36</td><td>0.79</td></tr>
+          <tr><td>AttU-Net</td><td>27.76</td><td class="best">0.87</td><td>28.29</td><td class="best">0.89</td><td>28.55</td><td class="best">0.90</td></tr>
+          <tr><td>FNO</td><td>27.37</td><td>0.73</td><td>27.94</td><td>0.75</td><td>28.15</td><td>0.76</td></tr>
+          <tr><td>DDPM</td><td>26.35</td><td>0.65</td><td>26.51</td><td>0.65</td><td>26.91</td><td>0.64</td></tr>
+          <tr class="noir-row"><td>NOIR (Ours)</td><td class="best">30.94</td><td>0.86</td><td class="best">30.94</td><td>0.86</td><td class="best">31.83</td><td>0.87</td></tr>
+          <tr class="grp"><td colspan="7">fastMRI — MRI PD → T2</td></tr>
+          <tr><td>U-Net</td><td>21.68</td><td>0.60</td><td>23.49</td><td>0.68</td><td>24.55</td><td>0.72</td></tr>
+          <tr><td>ViT</td><td>22.34</td><td>0.62</td><td>22.54</td><td>0.63</td><td>22.61</td><td>0.63</td></tr>
+          <tr><td>AttU-Net</td><td>21.75</td><td>0.60</td><td>23.26</td><td>0.67</td><td>24.46</td><td>0.72</td></tr>
+          <tr><td>FNO</td><td>22.61</td><td>0.58</td><td>22.74</td><td>0.60</td><td>22.82</td><td>0.60</td></tr>
+          <tr><td>DDPM</td><td>22.66</td><td class="best">0.69</td><td class="best">25.59</td><td class="best">0.76</td><td class="best">25.45</td><td class="best">0.74</td></tr>
+          <tr class="noir-row"><td>NOIR (Ours)</td><td class="best">22.87</td><td>0.61</td><td>22.87</td><td>0.61</td><td>22.87</td><td>0.61</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══════ ε-ReNO ═══════ -->
+  <section class="fade">
+    <div class="sec-label">Theoretical Properties</div>
+    <h2>NOIR is an $\varepsilon$-ReNO</h2>
+
+    <p>
+      A core desideratum for neural operators in scientific computing is <em>consistency across discretizations</em>: the same underlying operator should be recovered regardless of how the input function is sampled. Bartolucci et al. formalise this as the <strong>Representation Equivalent Neural Operator (ReNO)</strong> framework, and we show that NOIR empirically satisfies it.
+    </p>
+
+    <p>
+      A neural operator $\mathcal{T} : \mathcal{F} \to \mathcal{G}$ is a <strong>ReNO</strong> (Bartolucci et al.) if its discrete counterpart $\mathcal{T}^d$, acting on latent coefficients rather than grid values, is consistent across discretizations. Formally, the <strong>aliasing error</strong> between the continuous operator and the discrete pipeline must vanish:
+    </p>
+
+    <div class="math-block">
+      <div class="label">Aliasing error</div>
+      $$\varepsilon(\mathcal{T},\, \mathcal{T}^d) \;=\; \mathcal{T} \;-\; T_\Phi \circ \mathcal{T}^d \circ T_\Psi^\dagger \;\approx\; 0$$
+      <p style="font-size:13px;color:var(--muted);margin-top:10px;margin-bottom:0">$T_\Psi^\dagger$ maps a discrete signal to its latent code; $T_\Phi$ synthesises a continuous output from predicted latents. An <strong>$\varepsilon$-ReNO</strong> bounds this error by a small $\varepsilon > 0$, guaranteeing that two discretizations of the same input yield nearly identical predictions.</p>
+    </div>
+
+    <h3>How NOIR instantiates the framework</h3>
+    <p>
+      In NOIR, $T_\Psi^\dagger$ is the INR inner-loop optimization (discrete signal $\to$ $z_\text{in}$) and $T_\Phi$ is the output INR evaluated at arbitrary resolution. Because $\mathcal{T}^d$ operates solely on $z_\text{in}$, it is decoupled from the input grid.
+    </p>
+<!-- 
+    <div class="reno-pipeline">
+      <div class="reno-step">
+        <div class="step-box">$f^d$ at res $r$</div>
+        <div class="step-label">discrete input</div>
+      </div>
+      <div class="reno-arrow">→</div>
+      <div class="reno-step">
+        <div class="step-box">$T_\Psi^\dagger$</div>
+        <div class="step-label">INR inner-loop<br>→ $z_\text{in} \in \mathbb{R}^{p_\text{in}}$</div>
+      </div>
+      <div class="reno-arrow">→</div>
+      <div class="reno-step">
+        <div class="step-box hl">$\mathcal{T}^d$</div>
+        <div class="step-label">Neural Operator<br>$z_\text{in} \mapsto \hat{z}_\text{out}$</div>
+      </div>
+      <div class="reno-arrow">→</div>
+      <div class="reno-step">
+        <div class="step-box">$T_\Phi$</div>
+        <div class="step-label">output INR eval<br>at any res $r'$</div>
+      </div>
+      <div class="reno-arrow">→</div>
+      <div class="reno-step">
+        <div class="step-box">$g$ at res $r'$</div>
+        <div class="step-label">continuous output</div>
+      </div>
+    </div> -->
+
+    <!-- <p>
+      Because $\mathcal{T}^d$ acts only on $z_\text{in}$ — which is optimized to represent the <em>continuous</em> function underlying $f^d$ — the predicted $\hat{z}_\text{out}$ is independent of the resolution $r$ at which $f^d$ was observed. This is the mechanism that makes NOIR a $\varepsilon$-ReNO: the aliasing error is driven to zero by design.
+    </p> -->
+
+    <h3>Empirical validation</h3>
+    <p>
+      We validate this on the Shenzhen dataset across five resolutions: $32^2$, $64^2$, $128^2$, $160^2$, $200^2$. For each test sample and each resolution pair $(r_i, r_j)$ we compute pairwise MSE between latent codes, and define $\varepsilon$ as the worst-case bound over the entire test set.
+    </p>
+
+    <div class="stat-cards">
+      <div class="stat-card">
+        <div class="stat-val">4.0 × 10⁻⁶</div>
+        <div class="stat-desc">$\varepsilon_{z_\text{in}}$ — max pairwise MSE between input latents across all resolution pairs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">2.2 × 10⁻⁵</div>
+        <div class="stat-desc">$\varepsilon_{z_\text{out}}$ — max pairwise MSE between predicted output latents</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">0.93–0.94</div>
+        <div class="stat-desc">Mean Dice across all resolutions $32^2$–$200^2$ — essentially flat</div>
+      </div>
+    </div>
+
+    <div class="fig-row">
+      <div class="fig">
+        <img src="figures/dice_distributions.png" alt="Dice distributions across resolutions">
+        <div class="fig-cap"><strong>(a)</strong> Dice distributions from $32^2$ to $200^2$: mean stays at 0.93–0.94.</div>
+      </div>
+      <div class="fig">
+        <img src="figures/shenzhen_multi_resolutions.png" alt="Segmentation at multiple resolutions">
+        <div class="fig-cap"><strong>(b)</strong> Consistent segmentation predictions on the same test sample at different input resolutions.</div>
+      </div>
+    </div>
+
+    <div class="fig-row">
+      <div class="fig">
+        <img src="figures/confusion_zin_mse_mean.png" alt="Input latent MSE across resolutions">
+        <div class="fig-cap"><strong>Input latent $z_\text{in}$.</strong> Pairwise MSE across resolutions — near zero, confirming resolution-independent encoding via $T_\Psi^\dagger$.</div>
+      </div>
+      <div class="fig">
+        <img src="figures/confusion_zout_mse_mean.png" alt="Output latent MSE across resolutions">
+        <div class="fig-cap"><strong>Output latent $\hat{z}_\text{out}$.</strong> Pairwise MSE across resolutions — the NO produces nearly identical predictions regardless of the input discretization.</div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ═══════ ABLATION ═══════ -->
+  <section class="fade">
+    <div class="sec-label">Ablation</div>
+    <h2>Operator Architecture</h2>
+
+    <p>
+      In low-dimensional latent spaces ($p = 64$), even linear regression achieves competitive results. In higher dimensions ($p = 2048$), an MLP provides a clear advantage — the difficulty scales with latent dimensionality, not the task.
+    </p>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="text-align:left">Dataset (dim)</th>
+            <th style="text-align:left">Operator $\mathcal{T}$</th>
+            <th>DSC ↑</th>
+            <th>IoU ↑</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="grp"><td colspan="4">Shenzhen — $p = 64$</td></tr>
+          <tr><td>Shenzhen</td><td>Linear Regression</td><td>0.93</td><td>0.87</td></tr>
+          <tr><td>Shenzhen</td><td>SVR</td><td class="best">0.94</td><td class="best">0.88</td></tr>
+          <tr><td>Shenzhen</td><td>Random Forest</td><td>0.93</td><td>0.86</td></tr>
+          <tr class="noir-row"><td>Shenzhen</td><td>MLP (Ours)</td><td class="best">0.94</td><td class="best">0.88</td></tr>
+          <tr class="grp"><td colspan="4">OASIS-4 — $p = 2048$</td></tr>
+          <tr><td>OASIS-4</td><td>Linear Regression</td><td>0.80</td><td>0.68</td></tr>
+          <tr><td>OASIS-4</td><td>SVR</td><td>0.79</td><td>0.66</td></tr>
+          <tr><td>OASIS-4</td><td>Random Forest</td><td>0.80</td><td>0.68</td></tr>
+          <tr class="noir-row"><td>OASIS-4</td><td>MLP (Ours)</td><td class="best">0.85</td><td class="best">0.79</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══════ INR RECONSTRUCTIONS ═══════ -->
+  <section class="fade">
+    <div class="sec-label">Supplementary — INR Reconstruction Quality</div>
+    <h2>Signal Reconstruction</h2>
+
+    <p>Output INR reconstructions vs. ground truth confirm the latent codes carry sufficient information for each task.</p>
+
+    <div class="fig">
+      <img src="figures/shenzhen_reconstructions.png" alt="Shenzhen INR reconstructions">
+      <div class="fig-cap"><strong>Shenzhen.</strong> Output INR reconstructions of lung segmentation masks. DSC: 0.98, IoU: 0.97.</div>
+    </div>
+
+    <div class="fig">
+      <img src="figures/oasis_reconstruction.png" alt="OASIS-4 INR reconstructions">
+      <div class="fig-cap"><strong>OASIS-4.</strong> Output INR reconstructions of multi-label brain segmentations. DSC: 0.91, IoU: 0.84.</div>
+    </div>
+
+    <div class="fig">
+      <img src="figures/fastmri_reconstruction.png" alt="fastMRI INR reconstructions">
+      <div class="fig-cap"><strong>fastMRI.</strong> Output INR reconstructions of T2 MRI slices. PSNR: 29.09, SSIM: 0.71.</div>
+    </div>
+
+    <div class="fig">
+      <img src="figures/us_reconstruction.png" alt="Ultrasound INR reconstructions">
+      <div class="fig-cap"><strong>Ultrasound.</strong> Output INR reconstructions from latent codes. PSNR: 33.48, SSIM: 0.70.</div>
+    </div>
+  </section>
+
+  <!-- ═══════ DISCUSSION ═══════ -->
+  <!-- <section class="fade">
+    <div class="sec-label">Discussion</div>
+    <h2>Limitations &amp; Future Work</h2>
+
+    <div class="limits">
+      <div class="limit">
+        <div class="limit-dot"></div>
+        <p><strong>Latent dimensionality trade-off.</strong> Larger latent codes improve fidelity but make the NO harder to train. Co-design of both components is essential.</p>
+      </div>
+      <div class="limit">
+        <div class="limit-dot"></div>
+        <p><strong>Supervised only.</strong> NOIR requires paired data. Unsupervised tasks such as deformable image registration are not yet supported.</p>
+      </div>
+      <div class="limit">
+        <div class="limit-dot"></div>
+        <p><strong>Inference time.</strong> The inner optimization loop adds ~0.2–1.6 s per sample vs. ~3–5 ms for feed-forward baselines.</p>
+      </div>
+    </div>
+  </section> -->
+
+  <!-- ═══════ BIBTEX ═══════ -->
+  <section class="fade">
+    <div class="sec-label">Citation</div>
+    <h2>BibTeX</h2>
+    <div class="bib">
+      <button class="copy-btn" onclick="copyBib()">Copy</button>
+      <pre id="bib-pre">@inproceedings{elhadramy2026noir,
+  title     = {NOIR: Neural Operator Mapping for Implicit Representations},
+  author    = {El Hadramy, Sidaty and Haouchine, Nazim and
+               Wehrli, Michael and Cattin, Philippe C.},
+  booktitle = {},
+  year      = {2026}
+}</pre>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>NOIR &nbsp;|&nbsp; <a href="https://github.com/Sidaty1/NOIR" target="_blank">GitHub</a> &nbsp;|&nbsp; <a href="#">arXiv (coming soon)</a></p>
+  <p style="margin-top:8px;font-size:10px;opacity:.5">University of Basel · Harvard Medical School</p>
+</footer>
+
+<script>
+function copyBib() {
+  navigator.clipboard.writeText(document.getElementById('bib-pre').textContent).then(() => {
+    const b = document.querySelector('.copy-btn');
+    b.textContent = 'Copied!';
+    setTimeout(() => b.textContent = 'Copy', 2000);
+  });
+}
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); obs.unobserve(e.target); } });
+}, { threshold: 0.07 });
+document.querySelectorAll('.fade').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
